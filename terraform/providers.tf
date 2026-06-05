@@ -13,8 +13,8 @@ provider "aws" {
   region = "ap-southeast-2"
   default_tags {
     tags = {
-      App = "disc-golf-bag-tags-2026"
-      ManagedBy   = "Terraform"
+      App       = "disc-golf-bag-tags-${var.version}"
+      ManagedBy = "Terraform"
     }
   }
 
