@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "bt_table_tag_info" {
-  name         = "bagTag2026_tag_info-${var.version}"
+  name         = "${var.version}_bagTag_tag_info"
   billing_mode = "PAY_PER_REQUEST"
   #deletion_protection_enabled = "true"
   hash_key = "tagNumber"
@@ -11,7 +11,7 @@ resource "aws_dynamodb_table" "bt_table_tag_info" {
 }
 
 resource "aws_dynamodb_table" "bt_table_users" {
-  name         = "bagTag2026_users-${var.version}"
+  name         = "${var.version}_bagTag_users"
   billing_mode = "PAY_PER_REQUEST"
   #deletion_protection_enabled = "true"
   hash_key = "userId"
@@ -23,7 +23,7 @@ resource "aws_dynamodb_table" "bt_table_users" {
 }
 
 resource "aws_dynamodb_table" "bt_table_challenge_log" {
-  name         = "bagTag2026_challenge_log-${var.version}"
+  name         = "${var.version}_bagTag_challenge_log"
   billing_mode = "PAY_PER_REQUEST"
   #deletion_protection_enabled = "true"
   hash_key = "challengeId"
