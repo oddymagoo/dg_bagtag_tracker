@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bag Tag Leaderboard</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f6f7fb;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+    }
+
+    button {
+      margin-bottom: 20px;
+      padding: 8px 12px;
+      border: none;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    button:hover {
+      background: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background: #111827;
+      color: white;
+      text-align: left;
+      padding: 12px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:hover {
+      background: #f3f4f6;
+    }
+
+    .tag {
+      font-weight: bold;
+    }
+
+    .loading {
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🏆 Bag Tag Leaderboard</h1>
+
+  <button onclick="loadLeaderboard()">Refresh</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tag</th>
+        <th>Player</th>
+        <th>Held Since</th>
+      </tr>
+    </thead>
+    <tbody id="leaderboard">
+      <tr><td colspan="3" class="loading">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+	const SUPABASE_URL = "https://limuvydpgucakoxopnlu.supabase.co";
+	const SUPABASE_KEY = "sb_publishable_QtvwZYGXT_U7cNkX19yUBw_KJnTs7HP";
+
+    async function loadLeaderboard() {
+      const tbody = document.getElementById("leaderboard");
+      tbody.innerHTML = `<tr><td colspan="3" class="loading">Loading...</td></tr>`;
+
+      try {
+        const res = await fetch(
+          SUPABASE_URL +
+          "/rest/v1/current_tag_holdings?select=tag_number,acquired_at,players(name)&order=tag_number.asc",
+          {
+            headers: {
+              apikey: SUPABASE_KEY,
+              Authorization: "Bearer " + SUPABASE_KEY
+            }
+          }
+        );
+
+        const data = await res.json();
+
+        renderTable(data);
+
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr><td colspan="3">Error loading data</td></tr>
+        `;
+        console.error(err);
+      }
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById("leaderboard");
+      tbody.innerHTML = "";
+
+      if (!data.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="3">No data found</td></tr>
+        `;
+        return;
+      }
+
+      data.forEach(row => {
+        const tag = row.tag_number;
+        const name = row.players?.name ?? "Unknown";
+        const since = new Date(row.acquired_at).toLocaleDateString();
+
+        const tr = document.createElement("tr");
+
+        if (tag <= 3) {
+          tr.style.background = "#fff7d6"; // highlight top 3
+        }
+
+        tr.innerHTML = `
+          <td class="tag">#${tag}</td>
+          <td>${name}</td>
+          <td>${since}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // initial load
+    loadLeaderboard();
+  </script>
+
+</body>
+</html>

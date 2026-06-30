@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f6f7fb;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+    }
+
+    button {
+      margin-bottom: 20px;
+      padding: 8px 12px;
+      border: none;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    button:hover {
+      background: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background: #111827;
+      color: white;
+      text-align: left;
+      padding: 12px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:hover {
+      background: #f3f4f6;
+    }
+
+    .tag {
+      font-weight: bold;
+    }
+
+    .loading {
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Leaderboard</h1>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Tag</th>
+      <th>Player</th>
+    </tr>
+  </thead>
+  <tbody id="board"></tbody>
+</table>
+
+<script>
+const SUPABASE_URL = "https://limuvydpgucakoxopnlu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_QtvwZYGXT_U7cNkX19yUBw_KJnTs7HP";
+
+async function load() {
+  const res = await fetch(
+    SUPABASE_URL + "/rest/v1/current_tag_holdings?select=tag_number,players(name)&order=tag_number.asc",
+    {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: "Bearer " + SUPABASE_KEY
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  const tbody = document.getElementById("board");
+  tbody.innerHTML = "";
+
+  data.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.tag_number}</td>
+      <td>${r.players.name}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+load();
+</script>
+
+</body>
+</html>

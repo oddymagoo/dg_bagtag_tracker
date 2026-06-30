@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bag Tag Stats</title>
+
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f5f5f5; }
+  </style>
+</head>
+
+<body>
+
+<h1>Stats Dashboard</h1>
+
+<button onclick="loadAll()">Refresh</button>
+
+<h2>Leaderboard</h2>
+<table id="leaderboard"></table>
+
+<h2>#1 Duration</h2>
+<table id="top1"></table>
+
+<h2>Defences</h2>
+<table id="defences"></table>
+
+<h2>Streaks</h2>
+<table id="streaks"></table>
+
+<script>
+
+const URL = "https://mxreajuedajkejfdkhvr.supabase.co";
+const KEY = "sb_publishable_kqBksaQE6v4cPUdjL8mwiw_Yqh6sWiR";
+
+function parseDuration(interval) {
+  // format: HH:MM:SS.microseconds
+  const [h, m, s] = interval.split(":");
+
+  const seconds = parseFloat(s);
+  return (
+    parseInt(h) * 3600 * 1000 +
+    parseInt(m) * 60 * 1000 +
+    seconds * 1000
+  );
+}
+
+async function fetchTable(table) {
+  const res = await fetch(`${URL}/rest/v1/${table}?select=*`, {
+    headers: {
+      apikey: KEY,
+      Authorization: "Bearer " + KEY
+    }
+  });
+  return await res.json();
+}
+
+function renderTable(el, data, cols) {
+  let html = "<tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr>";
+
+  data.forEach(row => {
+    html += "<tr>" + cols.map(c => `<td>${row[c] ?? ""}</td>`).join("") + "</tr>";
+  });
+
+  el.innerHTML = html;
+}
+
+function msToHours(ms) {
+  return (ms / 1000 / 60 / 60).toFixed(2);
+}
+
+async function loadAll() {
+
+  const leaderboard = await fetchTable("leaderboard");
+  renderTable(document.getElementById("leaderboard"),
+    leaderboard,
+    ["name","tag_number"]
+  );
+
+  const top1 = await fetchTable("top1_duration");
+
+  renderTable(
+    document.getElementById("top1"),
+    top1.map(x => ({
+      name: x.name,
+        hours: msToHours(parseDuration(x.duration))
+    })),
+    ["name","hours"]
+  );
+
+  const def = await fetchTable("defences");
+  renderTable(document.getElementById("defences"), def, ["name","defences"]);
+
+  const streaks = await fetchTable("streaks");
+  renderTable(document.getElementById("streaks"), streaks, ["name","best_streak"]);
+}
+
+loadAll();
+
+</script>
+
+</body>
+</html>

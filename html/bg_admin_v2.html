@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bag Tag Admin v2</title>
+
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    select, input, button { margin: 8px 0; padding: 6px; }
+    .row { margin-bottom: 12px; }
+    #log { white-space: pre-wrap; background: #111; color: #0f0; padding: 10px; }
+  </style>
+</head>
+<body>
+
+<h2>Submit Match</h2>
+
+<input id="count" type="number" value="3" min="2" max="6">
+<button onclick="build()">Build</button>
+
+<div id="box"></div>
+
+<button onclick="submit()">Submit</button>
+
+<pre id="log"></pre>
+
+<script>
+const URL = "https://mxreajuedajkejfdkhvr.supabase.co";
+const KEY = "sb_publishable_kqBksaQE6v4cPUdjL8mwiw_Yqh6sWiR";
+
+let players = [];
+
+function log(x){ document.getElementById("log").textContent += x+"\n"; }
+
+async function load(){
+  const res = await fetch(URL+"/rest/v1/current_tag_holdings?select=player_id,tag_number",{
+    headers:{apikey:KEY,Authorization:"Bearer "+KEY}
+  });
+
+  const tags = await res.json();
+
+  const res2 = await fetch(URL+"/rest/v1/players?select=player_id,name",{
+    headers:{apikey:KEY,Authorization:"Bearer "+KEY}
+  });
+
+  const list = await res2.json();
+
+  players = tags.map(t=>{
+    const p = list.find(x=>x.player_id===t.player_id);
+    return {...t,name:p?.name||"?"};
+  });
+}
+
+function build(){
+  const c = +document.getElementById("count").value;
+  const box = document.getElementById("box");
+  box.innerHTML="";
+
+  for(let i=0;i<c;i++){
+    const d=document.createElement("div");
+
+    const s=document.createElement("select");
+    s.id="p"+i;
+
+    players.forEach(p=>{
+      const o=document.createElement("option");
+      o.value=p.player_id;
+      o.textContent=`${p.name} (T${p.tag_number})`;
+      s.appendChild(o);
+    });
+
+    d.innerHTML=`${i+1} place`;
+    d.appendChild(s);
+    box.appendChild(d);
+  }
+}
+
+async function submit(){
+  const c=+document.getElementById("count").value;
+  const arr=[];
+
+  for(let i=0;i<c;i++){
+    arr.push(document.getElementById("p"+i).value);
+  }
+
+  log("Submitting...");
+
+  const res = await fetch(URL+"/rest/v1/rpc/submit_match",{
+    method:"POST",
+    headers:{
+      apikey:KEY,
+      Authorization:"Bearer "+KEY,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      p_season_id:1,
+      p_player_ids:arr
+    })
+  });
+
+  log(JSON.stringify(await res.json(),null,2));
+  //setTimeout(() => { location.reload(); }, 3000);
+}
+
+load();
+
+</script>
+
+</body>
+</html>
