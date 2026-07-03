@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>bT Admin V3 - Enter Matches</title>
+  <link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+  <!-- Header bar --> 
+  <button type="button" class="collapsible">&sect</button>
+  <div class="content">
+    <p><a href="./index.html">Leaderboard</a></p>
+    <p><a href="./bt_admin_add_user.html">Add User</a></p>
+    <p><a href="./bt_admin_enter_matches.html">Enter Matches</a></p>
+  </div>
+  <script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var content = this.nextElementSibling;
+      if (content.style.display === "block") {
+        content.style.display = "none";
+      } else {
+        content.style.display = "block";
+      }
+    });
+    } 
+    </script>
+    <!-- Header bar end -->
+
+  <h2>Submit Match</h2>
+
+  <input id="count" type="number" value="3" min="2" max="8">
+  <button onclick="build()">Build</button>
+
+  <div id="box"></div>
+
+  <button onclick="submit()">Submit</button>
+
+  <pre id="log"></pre>
+
+  <script>
+    const URL = "https://limuvydpgucakoxopnlu.supabase.co";
+    const KEY = "sb_publishable_QtvwZYGXT_U7cNkX19yUBw_KJnTs7HP";
+
+    let players = [];
+
+    function log(x){ document.getElementById("log").textContent += x+"\n"; }
+    // New Load() from Copilot  
+    async function load(){
+    const res = await fetch(
+        URL + "/rest/v1/v_leaderboard",
+        {
+            headers:{
+                apikey:KEY,
+                Authorization:"Bearer "+KEY
+            }
+        }
+    );
+
+    players = await res.json();
+}
+
+   // New build() from Copilot  
+    function build(){
+      const c = +document.getElementById("count").value;
+      const box = document.getElementById("box");
+
+      box.innerHTML="";
+      for(let i=0;i<c;i++){
+        const row = document.createElement("div");
+        row.style.marginBottom = "8px";
+        const lbl = document.createElement("span");
+        lbl.textContent = `${i+1} place `;
+        const sel = document.createElement("select");
+        sel.id = "p"+i;
+        const blank = document.createElement("option");
+        blank.value = "";
+        blank.textContent = "-- Select Player --";
+        sel.appendChild(blank);
+        players.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.player_id;
+            opt.textContent =
+                `${p.name} (T${p.tag_number})`;
+            sel.appendChild(opt);
+        });
+        row.appendChild(lbl);
+        row.appendChild(sel);
+        box.appendChild(row);
+      }
+    }
+
+    // New submit from copilot
+    async function submit(){   
+      const matchId = crypto.randomUUID(); //added this to generate match_id
+
+      const c = +document.getElementById("count").value;
+      const selectedPlayers = [];
+
+      for(let i=0;i<c;i++){
+          const playerId = document.getElementById("p"+i).value;
+          if(!playerId){
+              alert("All positions must have a player");
+              return;
+          }
+          if(selectedPlayers.includes(playerId)){
+              alert("Player selected more than once");
+              return;
+          }
+          selectedPlayers.push(playerId);
+      }
+      const selectedData = selectedPlayers.map(id =>
+          players.find(p => p.player_id === id)
+      );
+
+      const tagsInPlay = selectedData
+          .map(p => p.tag_number)
+          .sort((a,b)=>a-b);
+      const results = selectedData.map((player,index)=>{
+          return {
+            match_id: matchId,
+            player_id: player.player_id,
+            tag_start: player.tag_number,
+            tag_finish: tagsInPlay[index],
+            finish_position: index + 1,
+            num_players: c
+          };
+      });
+
+      log("Match payload:");
+      log(JSON.stringify(results,null,2));
+      const res = await fetch(
+          URL + "/rest/v1/rpc/submit_match",
+          {
+              method:"POST",
+              headers:{
+                  apikey:KEY,
+                  Authorization:"Bearer "+KEY,
+                  "Content-Type":"application/json"
+              },
+              body:JSON.stringify({
+                  p_results: results
+              })
+          }
+      );
+      const data = await res.json();
+      log(JSON.stringify(data,null,2));
+      if(res.ok){
+          alert("Match submitted");
+          //location.reload();
+          setTimeout(() => { location.reload(); }, 2000);
+      }
+    }
+
+    load();
+
+  </script>
+</body>
+</html>
+
+
+
