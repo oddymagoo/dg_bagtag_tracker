@@ -8,31 +8,6 @@
 </head>
 
 <body>
-     <!-- Header bar --> 
-    <button type="button" class="collapsible">&sect</button>
-    <div class="content">
-        <p><a href="./index.html">Leaderboard</a></p>
-        <p><a href="./bt_admin_add_user.html">Add User</a></p>
-        <p><a href="./bt_admin_enter_matches.html">Enter Matches</a></p>
-    </div>
-    <script>
-        var coll = document.getElementsByClassName("collapsible");
-        var i;
-
-        for (i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var content = this.nextElementSibling;
-            if (content.style.display === "block") {
-            content.style.display = "none";
-            } else {
-            content.style.display = "block";
-            }
-        });
-        } 
-    </script>
-    <!-- Header bar end -->
-
 <button onclick="loadAll()">Refresh</button>
 
 <h2>Leaderboard</h2>
