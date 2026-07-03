@@ -35,7 +35,18 @@
 
   <h2>Submit Match</h2>
 
-  <input id="count" type="number" value="3" min="2" max="8">
+  <!-- <input id="count" type="number" value="3" min="2" max="8"> -->
+  
+  <select id="count">
+    <option value="2">2 Players</option>
+    <option value="3" selected>3 Players</option>
+    <option value="4">4 Players</option>
+    <option value="5">5 Players</option>
+    <option value="6">6 Players</option>
+    <option value="7">7 Players</option>
+    <option value="8">8 Players</option>
+  </select>
+
   <button onclick="build()">Build</button>
 
   <div id="box"></div>
