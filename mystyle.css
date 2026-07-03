@@ -86,3 +86,34 @@ table {
       text-align: center;
       color: #666;
     }
+
+@media (max-width: 768px) {
+
+    body {
+        margin: 10px;
+        font-size: 18px;
+    }
+
+    h1, h2 {
+        font-size: 28px;
+    }
+
+    select,
+    input,
+    button {
+        width: 100%;
+        font-size: 20px;
+        min-height: 56px;
+        box-sizing: border-box;
+    }
+
+    td,
+    th {
+        padding: 16px 8px;
+        font-size: 16px;
+    }
+
+    .content {
+        padding: 10px;
+    }
+}
