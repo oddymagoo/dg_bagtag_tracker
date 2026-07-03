@@ -45,9 +45,11 @@
 <h3>Time spent with #1</h3>
 <table id="hold_one"></table>
 
-
 <h3>Defended tag</h3>
 <table id="defences_any"></table>
+
+<h3>Total Tag Matches</h3>
+<table id="tag_challenges"></table>
 
 <script>
 
@@ -134,6 +136,12 @@ async function loadAll() {
   renderTable(document.getElementById("defences_any"),
     defences_any,
     ["name","defence_count"]
+  );
+  
+  const tag_challenges = await fetchTable("v_tag_challenges");
+  renderTable(document.getElementById("tag_challenges"),
+    tag_challenges,
+    ["name","total_challenges"]
   );
 }
 
