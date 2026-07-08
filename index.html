@@ -8,8 +8,6 @@
 </head>
 
 <body>
-<button onclick="loadAll()">Refresh</button>
-
 <h2>Leaderboard</h2>
 <table id="leaderboard"></table>
 
@@ -104,7 +102,7 @@ async function loadAll() {
   const hold_one = await fetchTable("v_hold_one_calc");
   renderTable(document.getElementById("hold_one"),
     hold_one,
-    ["name","hours_holding_tag1"]
+    ["name","total_time_holding_tag1"]
   );
 
   const defences_any = await fetchTable("v_defences_any");
