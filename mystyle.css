@@ -1,100 +1,117 @@
-body, a { 
-    font-family: Arial; 
-    margin: 2px; 
+body, a {
+    font-family: Arial, sans-serif;
 }
 
-h1 { margin-bottom: 16px; }
+body {
+    margin: 2px;
+}
 
-select, input, button { 
-    margin: 8px 0; 
+h1 {
+    margin-bottom: 16px;
+}
+
+select,
+input,
+button {
+    margin: 8px 0;
     padding: 12px;
     font-size: 18px;
     min-height: 48px;
 }
 
-.row { 
-    margin-bottom: 12px; 
-}
-
-#log { 
-    white-space: pre-wrap; 
-    background: #111; 
-    color: #0f0; 
-    padding: 10px; 
-}
-
-/* Style the button that is used to open and close the collapsible content */
-.collapsible {
-    background-color: #eee;
-    color: #444;
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
+button {
+    margin-bottom: 20px;
     border: none;
-    text-align: left;
+    background: #111827;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+button:hover {
+    background: #374151;
+}
+
+.row {
+    margin-bottom: 12px;
+}
+
+#log {
+    white-space: pre-wrap;
+    background: #111;
+    color: #0f0;
+    padding: 10px;
+}
+
+.collapsible {
+    width: 100%;
+    padding: 18px;
+    border: none;
     outline: none;
+    text-align: left;
+    cursor: pointer;
     font-size: 15px;
+    background: #eee;
+    color: #444;
 }
 
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .collapsible:hover {
-    background-color: #ccc;
+.active,
+.collapsible:hover {
+    background: #ccc;
 }
 
-/* Style the collapsible content. Note: hidden by default */
 .content {
-    padding: 0 18px;
     display: none;
     overflow: hidden;
-    background-color: #f1f1f1;
+    padding: 0 18px;
+    background: #f1f1f1;
 }
 
-button { margin-bottom: 20px; padding: 8px 12px; border: none; background: #111827; color: white; cursor: pointer; border-radius: 6px; }
-
-button:hover { background: #374151; }
-
 table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
 
-    th { 
-      background: #111827;
-      color: white;
-      text-align: left;
-      padding: 12px;
-    }
+th,
+td {
+    padding: 12px;
+}
 
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-    }
+th {
+    text-align: left;
+    background: #111827;
+    color: #fff;
+}
 
-    tr:hover {
-      background: #f3f4f6;
-    }
+td {
+    border-bottom: 1px solid #eee;
+}
 
-    .tag {
-      font-weight: bold;
-    }
+tr:hover {
+    background: #f3f4f6;
+}
 
-    .loading {
-      text-align: center;
-      color: #666;
-    }
+.tag {
+    font-weight: bold;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+}
 
 @media (max-width: 768px) {
-
     body {
         margin: 10px;
         font-size: 18px;
     }
 
-    h1, h2 {
+    h1,
+    h2 {
         font-size: 28px;
     }
 
@@ -107,8 +124,8 @@ table {
         box-sizing: border-box;
     }
 
-    td,
-    th {
+    th,
+    td {
         padding: 16px 8px;
         font-size: 16px;
     }
