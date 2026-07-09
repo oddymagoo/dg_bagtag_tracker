@@ -51,8 +51,8 @@ button:hover {
     text-align: left;
     cursor: pointer;
     font-size: 15px;
-    background: #eee;
-    color: #111827;
+    background: #111827;
+    color: #fff;
 }
 
 .active,
@@ -64,7 +64,7 @@ button:hover {
     display: none;
     overflow: hidden;
     padding: 0 18px;
-    background: #f1f1f1;
+    background: #374151;
 }
 
 table {
