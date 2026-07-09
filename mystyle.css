@@ -52,12 +52,12 @@ button:hover {
     cursor: pointer;
     font-size: 15px;
     background: #eee;
-    color: #444;
+    color: #111827;
 }
 
 .active,
 .collapsible:hover {
-    background: #ccc;
+    background: #374151;
 }
 
 .content {
