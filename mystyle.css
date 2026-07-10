@@ -1,4 +1,6 @@
-body, a {
+/* Global */
+body,
+a {
     font-family: Arial, sans-serif;
 }
 
@@ -10,6 +12,7 @@ h1 {
     margin-bottom: 16px;
 }
 
+/* Inputs */
 select,
 input,
 button {
@@ -32,10 +35,27 @@ button:hover {
     background: #374151;
 }
 
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 0;
+}
+
+.tabs button {
+    margin: 0;
+    border-radius: 0;
+}
+
+.tab-content {
+    margin-top: 20px;
+}
+
+/* Layout */
 .row {
     margin-bottom: 12px;
 }
 
+/* Log */
 #log {
     white-space: pre-wrap;
     background: #111;
@@ -43,6 +63,7 @@ button:hover {
     padding: 10px;
 }
 
+/* Collapsible Sections */
 .collapsible {
     width: 100%;
     padding: 18px;
@@ -67,6 +88,7 @@ button:hover {
     background: #374151;
 }
 
+/* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -95,6 +117,7 @@ tr:hover {
     background: #f3f4f6;
 }
 
+/* Misc */
 .tag {
     font-weight: bold;
 }
@@ -104,6 +127,7 @@ tr:hover {
     color: #666;
 }
 
+/* Mobile */
 @media (max-width: 768px) {
     body {
         margin: 10px;
