@@ -50,6 +50,11 @@ button:hover {
     margin-top: 20px;
 }
 
+.admin button {
+    background-color: rgb(255, 187, 0);
+    color:black
+}
+
 /* Layout */
 .row {
     margin-bottom: 12px;
