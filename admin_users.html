@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>BT Add User</title>
+    <link rel="stylesheet" href="mystyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏷️</text></svg>">
+</head>
+
+<body>
+    <!-- Header bar -->
+    <div class="admin">
+        <a class="btn" href="./admin_matches.html">Enter Matches</a>
+        <a class="btn" href="./admin_users.html">Add User</a>
+        <a class="btn" href="./index.html">Leaderboard</a>        
+        
+    </div>
+    <!-- Header bar -->
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        } 
+    </script>
+    
+    <!-- Header bar end -->
+
+    <h2>Add Player</h2>
+    <form id="playerForm">
+        <label>
+            Name:
+            <input type="text" id="name" required />
+        </label>
+        <br><br>
+
+        <label>
+            Starting Number:
+            <input type="number" id="tag_number" required />
+        </label>
+        <br><br>
+
+        <button type="submit">Add Player</button>
+    </form>
+
+    <div>
+        <pre id="output"></pre>
+    </div>
+
+    <h2>Existing Players</h2>
+    <table id="playersTable"></table>
+
+    <script type="module">
+
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+        const URL = "https://limuvydpgucakoxopnlu.supabase.co";
+        const KEY = "sb_publishable_QtvwZYGXT_U7cNkX19yUBw_KJnTs7HP";
+        const supabase = createClient(URL, KEY);
+
+        const { data: { user } } = await supabase.auth.getUser()
+        console.log(user);
+
+        async function getNextTagNumber() {
+            const { data, error } = await supabase
+                .from('players')
+                .select('tag_number')
+                .order('tag_number', { ascending: false })
+                .limit(1);
+
+            if (error) return 1;
+            if (!data || data.length === 0) return 1;
+
+            return data[0].tag_number + 1;
+        }
+
+        async function loadPlayers() {
+            const { data, error } = await supabase
+                .from("players")
+                .select("name, tag_number")
+                .order("name", { ascending: true });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+            return data;
+        }
+
+        function renderTable(el, data, cols) {
+            let html = "<tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr>";
+
+            data.forEach(row => {
+                html += "<tr>" + cols.map(c => {
+                    let value = row[c] ?? "";
+
+                    if (c === "last_updated") {
+                        value = formatDate(value);
+                    }
+
+                    return `<td>${value}</td>`;
+                }).join("") + "</tr>";
+            });
+
+            el.innerHTML = html;
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const nextNumber = await getNextTagNumber();
+            document.getElementById('tag_number').value = nextNumber;
+
+            //Add table below form
+            const list_players = await loadPlayers();
+            renderTable(document.getElementById("playersTable"), list_players, ["name"]);
+        });
+
+        const form = document.getElementById("playerForm");
+        const output = document.getElementById("output");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const startingNumber = parseInt(
+                document.getElementById("tag_number").value, 10
+            );
+
+            // OPTION 1: direct insert (simplest)
+            const { data, error } = await supabase
+                .from("players")
+                .insert([
+                    {
+                        name,
+                        tag_number: startingNumber
+                    }
+                ])
+                .select();
+
+            // OPTION 2 (RPC instead - comment above and use this if preferred)
+            /*
+            const { data, error } = await supabase.rpc("add_player", {
+                p_name: name,
+                p_starting_number: startingNumber
+            });
+            */
+
+            if (error) {
+                output.textContent = "Error: " + error.message;
+                return;
+            }
+
+            output.textContent = JSON.stringify(data, null, 2);
+            output.textContent = "Player added successfully. Please wait...";
+
+            form.reset();
+            setTimeout(() => { location.reload(); }, 1000);
+
+            //document.getElementById("tag_number").value = await getNextTagNumber();
+
+            //await loadPlayers();
+            //renderTable(document.getElementById("playersTable"),list_players,["name"]);
+
+
+        });        
+
+    </script>
+</body>
+
+</html>

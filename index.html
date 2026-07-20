@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>BagTag Tracker</title>
+  <link rel="stylesheet" href="mystyle.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏷️</text></svg>">
+
+  <style>
+    .tabs {
+      display: flex;
+      gap: 0;
+    }
+    .tabs button {
+      margin: 0;
+      border-radius: 0;
+    }
+    .tab-content {
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<div class="tabs">
+  <button onclick="showTab('leaderboardTab')">
+    Leaderboard
+  </button>
+
+  <button onclick="showTab('historyTab')">
+    Match History
+  </button>
+
+  <button onclick="window.location.href = 'admin_login.html';">
+    Admin
+  </button>
+
+</div>
+
+<!-- ========================= -->
+<!-- LEADERBOARD TAB -->
+<!-- ========================= -->
+
+<div id="leaderboardTab" class="tab-content">
+
+  <h2>Leaderboard</h2>
+  <table id="leaderboard"></table>
+
+
+  <h2>Defences</h2>
+
+  <h3>Defended #1 tag</h3>
+  <table id="defences_one"></table>
+
+
+  <h3>Time spent with #1</h3>
+  <table id="hold_one"></table>
+
+
+  <h3>Defended tag (any)</h3>
+  <table id="defences_any"></table>
+
+
+  <h3>Total Tag Matches</h3>
+  <table id="tag_challenges"></table>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- MATCH HISTORY TAB -->
+<!-- ========================= -->
+
+<div id="historyTab" class="tab-content" style="display:none;">
+
+  <h2>Match History</h2>
+
+  <table id="match_history"></table>
+
+</div>
+
+
+
+<script>
+
+const URL = "https://limuvydpgucakoxopnlu.supabase.co";
+const KEY = "sb_publishable_QtvwZYGXT_U7cNkX19yUBw_KJnTs7HP";
+
+
+// =========================
+// CACHE
+// =========================
+
+let appData = {
+  leaderboard: [],
+  defences_one: [],
+  hold_one: [],
+  defences_any: [],
+  tag_challenges: [],
+  match_history: []
+};
+
+
+
+// =========================
+// TAB SWITCHING
+// =========================
+
+function showTab(tab) {
+
+  document.getElementById("leaderboardTab").style.display = "none";
+  document.getElementById("historyTab").style.display = "none";
+
+  document.getElementById(tab).style.display = "block";
+
+}
+
+
+
+// =========================
+// HELPERS
+// =========================
+
+
+function parseDuration(interval) {
+
+  const [h, m, s] = interval.split(":");
+
+  const seconds = parseFloat(s);
+
+  return (
+    parseInt(h) * 3600 * 1000 +
+    parseInt(m) * 60 * 1000 +
+    seconds * 1000
+  );
+}
+
+
+
+async function fetchTable(table) {
+
+  const res = await fetch(
+    `${URL}/rest/v1/${table}?select=*`,
+    {
+      headers:{
+        apikey: KEY,
+        Authorization:"Bearer " + KEY
+      }
+    }
+  );
+
+  return await res.json();
+
+}
+
+
+/*
+function renderTable(el, data, cols) {
+  let html =
+    "<tr>" +
+    cols.map(c => `<th>${c}</th>`).join("") +
+    "</tr>";
+  data.forEach(row => {
+    html += "<tr>";
+    cols.forEach(c => {
+      let value = row[c] ?? "";
+      if(c === "last_updated") {
+        value = formatDate(value);
+      }
+      html += `<td>${value}</td>`;
+    });
+    html += "</tr>";
+  });
+  el.innerHTML = html;
+}
+*/
+function renderTable(el, data, cols) {
+  let html = "<tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr>";
+
+  let lastMatchId = null;
+  let blue = true;
+  data.forEach(row => {
+    // Toggle colour whenever we hit a new match
+    if (row.match_id !== lastMatchId) {
+      blue = !blue;
+      lastMatchId = row.match_id;
+    }
+    const rowStyle = blue
+      ? ' style="background-color:#dbeeff;"'
+      : '';
+    html += `<tr${rowStyle}>`;
+    html += cols.map(c => {
+      let value = row[c] ?? "";
+
+      if (c === "played_at" || c === "last_updated" || c === "match_concluded") {
+        value = formatDate(value);
+      }
+      return `<td>${value}</td>`;
+    }).join("");
+    html += "</tr>";
+  });
+  el.innerHTML = html;
+}
+
+
+function formatDate(ts) {
+  if(!ts) return "";
+  return new Date(ts).toLocaleString("en-AU", {
+    year:"numeric",
+    month:"short",
+    day:"2-digit",
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+}
+
+
+
+// =========================
+// LOAD DATA ONCE
+// =========================
+
+async function loadAll() {
+  appData.leaderboard =
+    await fetchTable("v_leaderboard");
+  renderTable(
+    document.getElementById("leaderboard"),
+    appData.leaderboard,
+    [
+      "name",
+      "tag_number",
+      "last_updated"
+    ]
+  );
+
+  appData.defences_one =
+    await fetchTable("v_defences_one");
+  renderTable(
+    document.getElementById("defences_one"),
+    appData.defences_one,
+    [
+      "name",
+      "defence_count"
+    ]
+  );
+
+  appData.hold_one =
+    await fetchTable("v_hold_one_calc");
+  renderTable(
+    document.getElementById("hold_one"),
+    appData.hold_one,
+    [
+      "name",
+      "total_time_holding_tag1"
+    ]
+  );
+
+  appData.defences_any =
+    await fetchTable("v_defences_any");
+  renderTable(
+    document.getElementById("defences_any"),
+    appData.defences_any,
+    [
+      "name",
+      "defence_count"
+    ]
+  );
+
+
+  appData.tag_challenges =
+    await fetchTable("v_tag_challenges");
+  renderTable(
+    document.getElementById("tag_challenges"),
+    appData.tag_challenges,
+    [
+      "name",
+      "total_challenges"
+    ]
+  );
+
+  // Match history loads once
+  // Change columns to match your view
+
+  appData.match_history =
+    await fetchTable("v_all_matches");
+
+
+  renderTable(
+    document.getElementById("match_history"),
+    appData.match_history,
+    ["player_name","tag_start","tag_finish","placing","match_concluded"]
+  );
+
+}
+
+
+
+loadAll();
+
+</script>
+
+
+</body>
+</html>
