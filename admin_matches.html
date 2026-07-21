@@ -195,12 +195,12 @@
                 }
             );
             */ 
-           //Move to the following:
+           //Move to the following which uses jwt:
            const { data, error } = await supabase.rpc('submit_match',{p_results: results});
 
             if (error) {
                 console.error(error);
-                log(error);
+                log(error.message);
                 alert(error.message);
                 return;
         }
