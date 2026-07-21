@@ -68,6 +68,7 @@
         let players = [];
 
         function log(x) { document.getElementById("log").textContent += x + "\n"; }
+
         // New Load() from Copilot  
         async function load() {
             const res = await fetch(
@@ -81,10 +82,12 @@
             );
 
             players = await res.json();
+            console.log(players);
         }
 
         // New build() from Copilot
         window.build = function build() {
+            
             const c = +document.getElementById("count").value;
             const box = document.getElementById("box");
 
@@ -209,7 +212,7 @@
         }
 
         setDefaultMatchDate();
-        
+        load();
 
     </script>
 </body>
