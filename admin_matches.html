@@ -49,12 +49,21 @@
 
     <pre id="log"></pre>
 
-    <script>
-        
-        //import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    <script type="module">
+
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
         const URL = "https://limuvydpgucakoxopnlu.supabase.co";
         const KEY = "sb_publishable_QtvwZYGXT_U7cNkX19yUBw_KJnTs7HP";
-        //const supabase = createClient(URL, KEY);
+        const supabase = createClient(URL, KEY);
+
+        //Redirect unauthenticated users back to login:
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            window.location.href = "./admin_login.html";
+        } else {
+            console.log("Logged in:", user.id);
+        }
 
         let players = [];
 
@@ -74,8 +83,8 @@
             players = await res.json();
         }
 
-        // New build() from Copilot  
-        function build() {
+        // New build() from Copilot
+        window.build = function build() {
             const c = +document.getElementById("count").value;
             const box = document.getElementById("box");
 
@@ -115,7 +124,7 @@
         }
 
         // New submit from copilot
-        async function submit() {
+        window.submit = async function submit() {
             //const matchId = crypto.randomUUID(); //added this to generate match_id
             //moving to a "dumb" method for match ID due to S3 not supporting https
             const matchId =
@@ -191,21 +200,16 @@
         window.signOut = async function signOut() {
             //const { error } = await supabase.auth.signOut() //Global scope: Signs user out of all devices
             const { error } = await supabase.auth.signOut({ scope: 'local' }) //Local scope: Signs out of only this device
+
             if (!error) {
                 window.location.href = "./admin_login.html"; 
             } else {
                 console.error(error);    
             }
         }
-        
-
-        
-        //const { data: { user } } = await supabase.auth.getUser()
-        //console.log(user);
-
 
         setDefaultMatchDate();
-        load();
+        
 
     </script>
 </body>

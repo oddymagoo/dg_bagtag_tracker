@@ -77,6 +77,8 @@
                 output.textContent = "Login failed: " + error.message;
                 return;
             }
+            //console.log("User:", data.user);
+            //console.log("Email:", data.user.email);
             window.location = "./admin_matches.html";
         });
 

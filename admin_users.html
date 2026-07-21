@@ -16,7 +16,7 @@
         <a class="btn" href="./admin_matches.html">Enter Matches</a>
         <a class="btn" href="./admin_users.html">Add User</a>
         <a class="btn" href="./index.html">Leaderboard</a>        
-        
+        <a class="btn" onclick="signOut()">Logout</a>        
     </div>
     <!-- Header bar -->
     <script>
@@ -65,13 +65,18 @@
     <script type="module">
 
         import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
+        
         const URL = "https://limuvydpgucakoxopnlu.supabase.co";
         const KEY = "sb_publishable_QtvwZYGXT_U7cNkX19yUBw_KJnTs7HP";
         const supabase = createClient(URL, KEY);
 
-        const { data: { user } } = await supabase.auth.getUser()
-        console.log(user);
+        //Redirect unauthenticated users back to login:
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            window.location.href = "./admin_login.html";
+        } else {
+            console.log("Logged in:", user.email);
+        }
 
         async function getNextTagNumber() {
             const { data, error } = await supabase
@@ -117,6 +122,7 @@
             el.innerHTML = html;
         }
 
+        /* Older build script - used to work before changing <script> to <script type="module">
         window.addEventListener('DOMContentLoaded', async () => {
             const nextNumber = await getNextTagNumber();
             document.getElementById('tag_number').value = nextNumber;
@@ -125,6 +131,13 @@
             const list_players = await loadPlayers();
             renderTable(document.getElementById("playersTable"), list_players, ["name"]);
         });
+        */
+       // New function after changing to <script type="module">
+        const nextNumber = await getNextTagNumber();
+        document.getElementById('tag_number').value = nextNumber;
+
+        const list_players = await loadPlayers();
+        renderTable(document.getElementById("playersTable"),list_players,["name"]);
 
         const form = document.getElementById("playerForm");
         const output = document.getElementById("output");
@@ -167,13 +180,19 @@
             form.reset();
             setTimeout(() => { location.reload(); }, 1000);
 
-            //document.getElementById("tag_number").value = await getNextTagNumber();
+        });
+    
+        window.signOut = async function signOut() {
+            //const { error } = await supabase.auth.signOut() //Global scope: Signs user out of all devices
+            const { error } = await supabase.auth.signOut({ scope: 'local' }) //Local scope: Signs out of only this device
 
-            //await loadPlayers();
-            //renderTable(document.getElementById("playersTable"),list_players,["name"]);
+            if (!error) {
+                window.location.href = "./admin_login.html";
+            } else {
+                console.error(error);
+            }
+        }
 
-
-        });        
 
     </script>
 </body>
