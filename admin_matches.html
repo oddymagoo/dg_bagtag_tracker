@@ -177,6 +177,8 @@
 
             log("Match payload:");
             log(JSON.stringify(results, null, 2));
+
+            /* this way uses API key, not supabase jwt auth
             const res = await fetch(
                 URL + "/rest/v1/rpc/submit_match",
                 {
@@ -191,13 +193,20 @@
                     })
                 }
             );
-            const data = await res.json();
-            log(JSON.stringify(data, null, 2));
-            if (res.ok) {
-                alert("Match submitted");
-                //location.reload();
-                setTimeout(() => { location.reload(); }, 1000);
-            }
+            */ 
+           //Move to the following:
+           const { data, error } = await supabase.rpc('submit_match',{p_results: results});
+
+            if (error) {
+                console.error(error);
+                alert(error.message);
+                return;
+        }
+
+        log(JSON.stringify(data, null, 2));
+
+        alert("Match submitted");
+
         }
 
         window.signOut = async function signOut() {
