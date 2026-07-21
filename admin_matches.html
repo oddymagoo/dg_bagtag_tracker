@@ -63,6 +63,7 @@
             window.location.href = "./admin_login.html";
         } else {
             console.log("Logged in:", user.id);
+            console.log("1.0");
         }
 
         let players = [];
@@ -82,7 +83,6 @@
             );
 
             players = await res.json();
-            console.log(players);
         }
 
         // New build() from Copilot
