@@ -68,6 +68,9 @@
   <h3>Total Tag Matches</h3>
   <table id="tag_challenges"></table>
 
+  <h3>Climbs and Falls</h3>
+  <table id="climbs_falls"></table>
+
 </div>
 
 
@@ -279,6 +282,20 @@ async function loadAll() {
     [
       "name",
       "total_challenges"
+    ]
+  );
+  //
+  appData.tag_challenges =
+    await fetchTable("v_climbs_falls");
+  renderTable(
+    document.getElementById("climbs_falls"),
+    appData.tag_challenges,
+    [
+      "name",
+      "climbs",
+      "single_biggest_climb",
+      "falls",
+      "single_biggest_fall"
     ]
   );
 
