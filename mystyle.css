@@ -17,6 +17,9 @@ h2 {
     background: #111827;
     color: #fff;
 }
+ul {
+    padding: 5px;
+}
 
 /* Inputs */
 select,
