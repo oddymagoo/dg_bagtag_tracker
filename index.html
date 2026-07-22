@@ -57,23 +57,23 @@
 
   <h2>Defences</h2>
 
-  <h3>Defended #1 tag</h3>
+  <h3>Defended #1 Tag</h3>
   <table id="defences_one"></table>
 
 
-  <h3>Time spent with #1</h3>
+  <h3>Time Spent With #1</h3>
   <table id="hold_one"></table>
 
 
-  <h3>Defended tag (any)</h3>
+  <h3>Defended Tag (any)</h3>
   <table id="defences_any"></table>
 
 
   <h3>Total Tag Matches</h3>
   <table id="tag_challenges"></table>
 
-  <h3>Climbs and Falls</h3>
-  <table id="climbs_falls"></table>
+  <h3>Jumps and Bumps</h3>
+  <table id="jumps_bumps"></table>
 
 </div>
 
@@ -290,16 +290,16 @@ async function loadAll() {
   );
   //
   appData.tag_challenges =
-    await fetchTable("v_climbs_falls");
+    await fetchTable("v_jumps_bumps");
   renderTable(
-    document.getElementById("climbs_falls"),
+    document.getElementById("jumps_bumps"),
     appData.tag_challenges,
     [
       "name",
-      "climbs",
-      "single_biggest_climb",
-      "falls",
-      "single_biggest_fall"
+      "jumps",
+      "biggest_jump",
+      "bumps",
+      "biggest_bump"
     ]
   );
 
